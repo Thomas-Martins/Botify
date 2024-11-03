@@ -1,11 +1,7 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import {Head, Link, useForm} from '@inertiajs/vue3';
+import {ref} from "vue";
 
 defineProps({
     canResetPassword: {
@@ -15,6 +11,8 @@ defineProps({
         type: String,
     },
 });
+
+const showPassword = ref(false);
 
 const form = useForm({
     email: '',
@@ -27,58 +25,56 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+const togglePassword = () => {
+    showPassword.value = !showPassword.value;
+};
 </script>
 
 <template>
     <GuestLayout>
-        <Head title="Log in" />
+        <Head title="Log in"/>
 
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+        <form @submit.prevent="submit"
+              class="mt-6 overflow-hidden bg-white px-6 py-4 shadow-md rounded-lg">
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
+            <!-- Champ email avec VTextField -->
+            <v-text-field
+                v-model="form.email"
+                label="Email"
+                type="email"
+                required
+                :error-messages="form.errors.email ? [form.errors.email] : []"
+                class="mt-1 block w-full"
+                variant="outlined"
+            />
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+            <!-- Champ mot de passe avec VTextField -->
+            <v-text-field
+                v-model="form.password"
+                label="Password"
+                :type="showPassword ? 'text' : 'password'"
+                required
+                :error-messages="form.errors.password ? [form.errors.password] : []"
+                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                :on-click:append-inner="togglePassword"
+                clearable
+                variant="outlined"
+            />
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+            <!-- Checkbox 'Remember me' avec VCheckbox -->
+            <v-checkbox
+                v-model="form.remember"
+                label="Remember me"
+                class="mt-4"
+            />
 
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4 block">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
-                    >
-                </label>
-            </div>
-
-            <div class="mt-4 flex items-center justify-end">
+            <!-- Lien et bouton de soumission -->
+            <div class="flex items-center justify-end">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
@@ -87,14 +83,27 @@ const submit = () => {
                     Forgot your password?
                 </Link>
 
-                <PrimaryButton
+                <!-- Remplace PrimaryButton par VBtn -->
+                <v-btn
                     class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
+                    :loading="form.processing"
                     :disabled="form.processing"
+                    color="black"
+                    @click="submit"
                 >
-                    Log in
-                </PrimaryButton>
+                    Login
+                </v-btn>
             </div>
         </form>
+
+        <!-- Lien pour l'inscription -->
+        <div class="text-center mt-5">
+            <Link
+                :href="route('register')"
+                class="text-md text-gray-600 underline hover:text-gray-900 focus:outline-none"
+            >
+                You don't have an account?
+            </Link>
+        </div>
     </GuestLayout>
 </template>

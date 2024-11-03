@@ -1,10 +1,6 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import {Head, useForm} from '@inertiajs/vue3';
 
 const props = defineProps({
     email: {
@@ -33,68 +29,60 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Reset Password" />
+        <Head title="Reset Password"/>
 
+        <!-- Formulaire de réinitialisation du mot de passe -->
         <form @submit.prevent="submit">
+            <!-- Champ Email -->
             <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
+                <v-text-field
+                    v-model="form.email"
+                    label="Email"
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+                    :error-messages="form.errors.email ? [form.errors.email] : []"
+                ></v-text-field>
             </div>
 
+            <!-- Champ Mot de passe -->
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
+                <v-text-field
+                    v-model="form.password"
+                    label="Password"
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
                     required
                     autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
+                    :error-messages="form.errors.password ? [form.errors.password] : []"
+                ></v-text-field>
             </div>
 
+            <!-- Champ Confirmation mot de passe -->
             <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
+                <v-text-field
+                    v-model="form.password_confirmation"
+                    label="Confirm Password"
                     id="password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
-                />
-
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
+                    :error-messages="form.errors.password_confirmation ? [form.errors.password_confirmation] : []"
+                ></v-text-field>
             </div>
 
+            <!-- Bouton de réinitialisation -->
             <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
+                <v-btn
+                    :loading="form.processing"
                     :disabled="form.processing"
+                    color="primary"
+                    @click="submit"
                 >
                     Reset Password
-                </PrimaryButton>
+                </v-btn>
             </div>
         </form>
     </GuestLayout>

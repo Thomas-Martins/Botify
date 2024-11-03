@@ -1,10 +1,6 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import {Head, useForm} from '@inertiajs/vue3';
 
 defineProps({
     status: {
@@ -23,14 +19,16 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Forgot Password" />
+        <Head title="Forgot Password"/>
 
+        <!-- Message d'information -->
         <div class="mb-4 text-sm text-gray-600">
             Forgot your password? No problem. Just let us know your email
             address and we will email you a password reset link that will allow
             you to choose a new one.
         </div>
 
+        <!-- Message de statut (succès) -->
         <div
             v-if="status"
             class="mb-4 text-sm font-medium text-green-600"
@@ -38,30 +36,32 @@ const submit = () => {
             {{ status }}
         </div>
 
+        <!-- Formulaire de demande de réinitialisation -->
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
+                <!-- Champ email avec VTextField -->
+                <v-text-field
                     v-model="form.email"
+                    label="Email"
+                    type="email"
                     required
                     autofocus
                     autocomplete="username"
+                    :error-messages="form.errors.email ? [form.errors.email] : []"
+                    class="mt-1 block w-full"
                 />
-
-                <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
+            <!-- Bouton d'envoi avec VBtn -->
             <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
+                <v-btn
+                    :loading="form.processing"
                     :disabled="form.processing"
+                    color="primary"
+                    @click="submit"
                 >
                     Email Password Reset Link
-                </PrimaryButton>
+                </v-btn>
             </div>
         </form>
     </GuestLayout>

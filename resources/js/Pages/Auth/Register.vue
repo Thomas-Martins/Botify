@@ -1,13 +1,14 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import {Head, Link, useForm} from '@inertiajs/vue3';
+import {ref} from "vue";
+
+
+const showPassword = ref(false);
+const showPasswordConfirmation = ref(false);
 
 const form = useForm({
-    name: '',
+    username: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -18,77 +19,69 @@ const submit = () => {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
+
+const togglePassword = () => {
+    showPassword.value = !showPassword.value;
+};
+const togglePasswordConfirmation = () => {
+    showPasswordConfirmation.value = !showPasswordConfirmation.value;
+};
 </script>
 
 <template>
     <GuestLayout>
-        <Head title="Register" />
+        <Head title="Register"/>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="mt-6 overflow-hidden bg-white px-6 py-8 shadow-md rounded-lg">
             <div>
-                <InputLabel for="name" value="Name" />
-
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
+                <v-text-field
+                    v-model="form.username"
+                    label="Username"
                     required
                     autofocus
-                    autocomplete="name"
+                    autocomplete="username"
+                    :error-messages="form.errors.username ? [form.errors.username] : []"
+                    variant="outlined"
                 />
-
-                <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
+                <v-text-field
                     v-model="form.email"
+                    label="Email"
+                    type="email"
                     required
                     autocomplete="username"
+                    :error-messages="form.errors.email ? [form.errors.email] : []"
+                    variant="outlined"
                 />
-
-                <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
+                <v-text-field
                     v-model="form.password"
+                    label="Password"
+                    :type="showPassword ? 'text' : 'password'"
                     required
                     autocomplete="new-password"
+                    :error-messages="form.errors.password ? [form.errors.password] : []"
+                    variant="outlined"
+                    :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    :on-click:append-inner="togglePassword"
                 />
-
-                <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
             <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
+                <v-text-field
                     v-model="form.password_confirmation"
+                    label="Confirm Password"
+                    :type="showPasswordConfirmation ? 'text' : 'password'"
                     required
                     autocomplete="new-password"
-                />
-
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
+                    :error-messages="form.errors.password_confirmation ? [form.errors.password_confirmation] : []"
+                    variant="outlined"
+                    :append-inner-icon="showPasswordConfirmation ? 'mdi-eye' : 'mdi-eye-off'"
+                    :on-click:append-inner="togglePasswordConfirmation"
                 />
             </div>
 
@@ -100,13 +93,15 @@ const submit = () => {
                     Already registered?
                 </Link>
 
-                <PrimaryButton
+                <v-btn
                     class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
+                    :loading="form.processing"
                     :disabled="form.processing"
+                    color="black"
+                    @click="submit"
                 >
                     Register
-                </PrimaryButton>
+                </v-btn>
             </div>
         </form>
     </GuestLayout>

@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.v-text-field input:focus {
+    outline: none; /* Désactive la bordure bleue */
+    box-shadow: none; /* Supprime l'ombre (si présente) */
+}

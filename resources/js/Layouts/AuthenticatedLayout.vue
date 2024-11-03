@@ -1,13 +1,14 @@
 <script setup>
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import {ref} from 'vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import {Link} from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+const alert = ref(true);
+
 </script>
 
 <template>
@@ -23,9 +24,7 @@ const showingNavigationDropdown = ref(false);
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
                                 <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
+                                    <h1 class="font-bold text-3xl">Botify</h1>
                                 </Link>
                             </div>
 
@@ -38,6 +37,12 @@ const showingNavigationDropdown = ref(false);
                                     :active="route().current('dashboard')"
                                 >
                                     Dashboard
+                                </NavLink>
+                                <NavLink
+                                    :href="route('webhooks')"
+                                    :active="route().current('webhooks')"
+                                >
+                                    Webhooks
                                 </NavLink>
                             </div>
                         </div>
@@ -52,7 +57,7 @@ const showingNavigationDropdown = ref(false);
                                                 type="button"
                                                 class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
-                                                {{ $page.props.auth.user.name }}
+                                                {{ $page.props.auth.user.username }}
 
                                                 <svg
                                                     class="-me-0.5 ms-2 h-4 w-4"
@@ -146,6 +151,12 @@ const showingNavigationDropdown = ref(false);
                         >
                             Dashboard
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('webhooks')"
+                            :active="route().current('webhooks')"
+                        >
+                            Webhooks
+                        </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -185,13 +196,33 @@ const showingNavigationDropdown = ref(false);
                 v-if="$slots.header"
             >
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
+                    <slot name="header"/>
                 </div>
             </header>
 
             <!-- Page Content -->
-            <main>
-                <slot />
+            <main class="max-w-7xl mx-auto px-5 sm:px-10">
+                <div class="mt-5" v-if="$page.props.auth.user.email_verified_at === null">
+                    <v-alert
+                        v-model="alert"
+                        border="start"
+                        close-label="Close Alert"
+                        color="info"
+                        variant="tonal"
+                        closable
+                        title="Merci de vérifier votre adresse email"
+                        type="info"
+                    >
+                        Votre adresse email n'a pas encore été vérifiée. Un email de vérification vous a été envoyé. Si
+                        vous ne l'avez pas reçu,
+                        <Link class="underline" :href="route('verification.notice')">cliquez
+                            ici
+                            pour en demander
+                            un autre.
+                        </Link>
+                    </v-alert>
+                </div>
+                <slot/>
             </main>
         </div>
     </div>
